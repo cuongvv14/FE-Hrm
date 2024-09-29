@@ -1,0 +1,329 @@
+<div class="content-wrapper container-xxl p-0">
+  <div class="content-body">
+    <!-- User List -->
+    <section class="users-list-wrapper">
+      <!-- users filter start -->
+      <div class="card">
+        <h5 class="card-header">Search Filter</h5>
+        <div class="card-body">
+          <div class="users-list-filter">
+            <form>
+              <div class="row">
+                <div class="col-12 col-md-4">
+                  <fieldset class="form-group">
+                    <ng-select
+                      [items]="branches"
+                      [(ngModel)]="selectBranch"
+                      name="selectedRole1"
+                      bindLabel="name"
+                      placeholder="Select Role"
+                      (change)="filterByRole($event)"
+                    ></ng-select>
+                  </fieldset>
+                </div>
+                <div class="col-12 col-md-4">
+                  <fieldset class="form-group">
+                    <ng-select
+                      [items]="selectPlan"
+                      [(ngModel)]="selectedPlan1"
+                      name="selectedPlan1"
+                      bindLabel="name"
+                      placeholder="Select Plan"
+                      (change)="filterByPlan($event)"
+                    ></ng-select>
+                  </fieldset>
+                </div>
+                <div class="col-12 col-md-4">
+                  <fieldset class="form-group">
+                    <ng-select
+                      [items]="selectStatus"
+                      [(ngModel)]="selectedStatus1"
+                      name="selectedStatus1"
+                      bindLabel="name"
+                      placeholder="Select Status"
+                      (change)="filterByStatus($event)"
+                    ></ng-select>
+                  </fieldset>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- users filter end -->
+
+      <div class="card">
+        <div class="row">
+          <div class="col-md-6 col-12">
+            <div class="d-flex justify-content-between align-items-center m-1">
+              <label class="d-flex align-items-center"
+                >Xem
+                <select class="form-control mx-25" [(ngModel)]="selectedOption">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                mục</label
+              >
+            </div>
+          </div>
+          <div
+            class="col-md-6 col-12 d-flex justify-content-start justify-content-md-end"
+          >
+            <div
+              class="d-flex align-items-center justify-content-end pr-1 pb-1 pb-md-0"
+            >
+              <label class="d-flex align-items-center ml-1 ml-md-0"
+                >Tìm kiếm:<input
+                  [(ngModel)]="searchValue1"
+                  name="searchValue1"
+                  type="search"
+                  class="form-control ml-25"
+                  (keyup)="filterUpdate($event)"
+                  (search)="filterUpdate($event)"
+              /></label>
+              <button
+                class="btn btn-primary ml-1"
+                rippleEffect
+                (click)="modalOpen(modalBasic)"
+              >
+                <i
+                  data-feather="plus"
+                  class="d-sm-none d-inline-block mr-0 mr-sm-1"
+                ></i
+                ><span class="d-none d-sm-inline-block">Thêm Phòng Ban</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <ngx-datatable
+          [rows]="rows"
+          [rowHeight]="50"
+          class="bootstrap core-bootstrap"
+          [limit]="selectedOption"
+          [columnMode]="ColumnMode.force"
+          [headerHeight]="50"
+          [footerHeight]="50"
+          [scrollbarH]="true"
+        >
+          <ngx-datatable-column
+            name="Tên Phòng Ban"
+            prop="departmentName"
+            [width]="200"
+          >
+            <ng-template
+              let-row="row"
+              let-name="value"
+              ngx-datatable-cell-template
+            >
+              <div class="d-flex align-items-center">
+                <ng-template #customAvatar>
+                  <div
+                    class="avatar mr-1 ml-0"
+                    [ngClass]="{
+                      'bg-light-success': row.status == 'active',
+                      'bg-light-secondary': row.status == 'inactive',
+                      'bg-light-warning': row.status == 'pending'
+                    }"
+                  >
+                    <div class="avatar-content">{{ name | initials }}</div>
+                  </div>
+                </ng-template>
+                <div class="cell-line-height">
+                  <a
+                    routerLink="/apps/hrm-setting/department/department-view/{{
+                      row.id
+                    }}"
+                    class="font-medium-1 d-block"
+                    ><span class="font-weight-bold">{{ name }}</span></a
+                  >
+                  <!-- <span class="text-muted font-small-2"
+                    >&#64;{{ row.departmentName }}</span
+                  > -->
+                </div>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+          <!-- Level -->
+          <ngx-datatable-column
+            name="Level"
+            prop="level"
+            [width]="200"
+          ></ngx-datatable-column>
+          <!-- branchId -->
+          <ngx-datatable-column
+            name="Tên Chi nhánh"
+            prop="branch.branchName"
+            [width]="100"
+          >
+          </ngx-datatable-column>
+
+          <ngx-datatable-column
+            name="Phòng ban gốc"
+            prop="parentDepartment.departmentName"
+            [width]="100"
+          ></ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+    </section>
+    <!--/ User List -->
+  </div>
+
+  <!-- New modal -->
+  <ng-template #modalBasic let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="myModalLabel1">Thêm mới Phòng Ban</h4>
+      <button
+        type="button"
+        class="close"
+        (click)="modal.dismiss('Cross click')"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body" tabindex="0" ngbAutofocus>
+      <div class="form-area">
+        <form [formGroup]="form" (ngSubmit)="onSubmitReactiveForm()">
+          <div class="form-group">
+            <label for="departmentName">Tên phòng ban</label>
+            <input
+              type="text"
+              id="departmentName"
+              placeholder="Tên phòng ban"
+              class="form-control"
+              name="departmentName"
+              formControlName="departmentName"
+              [ngClass]="{
+                'is-invalid':
+                  DepartmentName?.touched && DepartmentName?.invalid,
+                'is-valid': DepartmentName?.valid
+              }"
+            />
+
+            <div
+              *ngIf="DepartmentName?.touched && DepartmentName?.invalid"
+              class="invalid-feedback"
+            >
+              <div *ngIf="DepartmentName.errors?.['required']">
+                Tên phòng ban là bắt buộc
+              </div>
+              <div *ngIf="DepartmentName.errors?.['minlength']">
+                Tên phòng ban phải có ít nhất 5 ký tự
+              </div>
+              <div *ngIf="DepartmentName.errors?.['maxlength']">
+                Tên phòng ban không được vượt quá 255 ký tự
+              </div>
+              <div *ngIf="DepartmentName.errors?.['pattern']">
+                Tên phòng ban không được là số
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="">Cấp độ:</label>
+            <input
+              type="input"
+              placeholder="Cấp độ "
+              class="form-control"
+              name="level"
+              formControlName="level"
+              [ngClass]="{
+                'is-invalid': Level?.touched && Level?.invalid,
+                'is-valid': Level?.valid
+              }"
+            />
+            <div
+              *ngIf="Level?.touched && Level?.invalid"
+              class="invalid-feedback"
+            >
+              <div *ngIf="Level?.errors?.['required']">Cấp độ là bắt buộc</div>
+              <div *ngIf="Level?.errors?.['minlength']">
+                Cấp độ phải có ít nhất 1 ký tự
+              </div>
+              <div *ngIf="Level?.errors?.['maxlength']">
+                Cấp độ không được vượt quá 10 ký tự
+              </div>
+              <div *ngIf="Level?.errors?.['pattern']">Cấp độ phải là số</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="branch">Tên chi nhánh:</label>
+            <ng-select
+              [items]="branches"
+              bindLabel="branchName"
+              bindValue="id"
+              formControlName="branchId"
+              placeholder="Chọn chi nhánh"
+              [ngClass]="{
+                'is-invalid': BranchId.touched && BranchId.invalid,
+                'is-valid': BranchId.valid
+              }"
+            >
+            </ng-select>
+
+            <div
+              class="alert alert-danger"
+              *ngIf="BranchId.touched && BranchId.invalid"
+            >
+              <div *ngIf="BranchId.errors?.['required']">
+                Chi nhánh là bắt buộc
+              </div>
+              <div *ngIf="BranchId.errors?.['pattern']">
+                Chi nhánh không hợp lệ
+              </div>
+              <div *ngIf="BranchId.errors?.['minlength']">
+                Chi nhánh phải lớn hơn 1
+              </div>
+              <div *ngIf="BranchId.errors?.['maxlength']">
+                Chi nhánh không được vượt quá 10 kí tự
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="parentDepartment">Phòng ban gốc:</label>
+            <ng-select
+              [items]="departments"
+              bindLabel="departmentName"
+              bindValue="id"
+              formControlName="parentDepartmentId"
+              placeholder="Chọn phòng ban gốc"
+              [ngClass]="{
+                'is-invalid':
+                  ParentDepartmentId.touched && ParentDepartmentId.invalid,
+                'is-valid': ParentDepartmentId.valid
+              }"
+            >
+            </ng-select>
+
+            <div
+              class="invalid-feedback"
+              *ngIf="ParentDepartmentId.touched && ParentDepartmentId.invalid"
+            >
+              <div *ngIf="ParentDepartmentId.errors?.['required']">
+                Phòng ban gốc là bắt buộc
+              </div>
+              <div *ngIf="ParentDepartmentId.errors?.['pattern']">
+                Phòng ban gốc không hợp lệ
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="form.invalid"
+        (click)="onSubmitReactiveForm(modalBasic)"
+        rippleEffect
+      >
+        Lưu
+      </button>
+    </div>
+  </ng-template>
+  <!--/ New modal -->
+</div>

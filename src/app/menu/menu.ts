@@ -1,0 +1,86 @@
+import { CoreMenu } from "@core/types";
+
+export const menu: CoreMenu[] = [
+  {
+    id: "home",
+    title: "Home",
+    translate: "MENU.HOME",
+    type: "item",
+    icon: "home",
+    url: "home",
+  },
+  {
+    id: "sample",
+    title: "Sample",
+    translate: "MENU.SAMPLE",
+    type: "item",
+    icon: "file",
+    url: "sample",
+  },
+  {
+    id: "user",
+    title: "User",
+    translate: "",
+    type: "collapsible",
+    icon: "user",
+    children: [
+      {
+        id: "list",
+        title: "List",
+        translate: "List ",
+        type: "item",
+        icon: "circle",
+        url: "/apps/user/user-list",
+      },
+      {
+        id: "view",
+        title: "View",
+        translate: "View",
+        type: "item",
+        icon: "circle",
+        url: "/apps/user/user-view",
+      },
+      {
+        id: "edit",
+        title: "Edit",
+        translate: "Edit",
+        type: "item",
+        icon: "circle",
+        url: "/apps/user/user-edit",
+      },
+    ],
+  },
+  {
+    id: "hrm-setting",
+    title: "HRM Setting",
+    translate: "",
+    type: "collapsible",
+    icon: "settings",
+    children: [
+      {
+        id: "branch",
+        title: "Branch",
+        translate: "Công Ty",
+        type: "item",
+        icon: "home",
+        url: "/apps/hrm-setting/branch/branch-list",
+      },
+      {
+        id: "department",
+        title: "Department",
+        translate: "Phòng Ban",
+        type: "item",
+        icon: "layers",
+        url: "/apps/hrm-setting/department/department-list",
+      },
+      {
+        id: "position",
+        title: "Position",
+        translate: "Position",
+        type: "item",
+        icon: "archive",
+        url: "/apps/hrm-setting/position/position-list",
+      },
+    ],
+  },
+];
